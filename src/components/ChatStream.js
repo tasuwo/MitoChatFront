@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 function retrieveEvents(id, app) {
-  axios.get(`https:/api/url/events/` + id)
+  axios.get(`https://api.mito-chat.tasuwo.net/events/` + id)
     .then(response => {
       let fns = parseEvents(response.data.events);
       chain(fns.shift(), fns, app);
