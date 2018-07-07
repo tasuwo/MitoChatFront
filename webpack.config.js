@@ -6,7 +6,7 @@ module.exports = {
   mode: 'development',
   entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, './dist'),
     filename: 'bundle.js',
   },
   module: {
@@ -45,7 +45,7 @@ module.exports = {
   devServer: {
     clientLogLevel: 'warning',
     hot: true,
-    contentBase: path.resolve(__dirname, '../dist'),
+    contentBase: path.resolve(__dirname, './dist'),
   },
   plugins: [
     new VueLoaderPlugin(),
