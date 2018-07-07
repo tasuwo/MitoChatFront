@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import { chain, getFns } from './ChatStream'
+  import { retrieveEvents } from './ChatStream'
 
   export default {
     name: 'Chat',
@@ -48,8 +48,7 @@
       }
     },
     mounted: function () {
-      let fns = getFns(1);
-      chain(fns.shift(), fns, this);
+      retrieveEvents(1, this);
     }
   }
 </script>

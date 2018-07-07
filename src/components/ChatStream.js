@@ -1,115 +1,20 @@
+import axios from 'axios';
+
+function retrieveEvents(id, app) {
+  axios.get(`https:/api/url/events/` + id)
+    .then(response => {
+      let fns = parseEvents(response.data.events);
+      chain(fns.shift(), fns, app);
+    })
+    .catch(e => {
+      this.errors.push(e)
+    })
+}
+
 function chain(fn, fns, app) {
   if(fn) {
     fn(() => chain(fns.shift(), fns, app), app);
   }
-}
-
-/**
- * TODO: サーバへ問い合わせ & json 取得 & パース
- * @param id
- */
-function getFns(id) {
-  let fns = { chat: [] };
-
-  switch (id) {
-    case 1:
-      fns = {
-        chat: [
-          {
-            type: "waiting",
-            time: 2
-          },
-          {
-            type: "typing",
-            time: 2
-          },
-          {
-            type: "message",
-            icon: "default",
-            text: "起立！気をつけ！",
-            isRight: false
-          },
-          {
-            type: "waiting",
-            time: 1
-          },
-          {
-            type: "typing",
-            time: 4
-          },
-          {
-            type: "message",
-            icon: "default",
-            text: "こんにちは〜〜〜！月ノ美兎です〜〜〜！",
-            isRight: false
-          },
-          {
-            type: "waiting",
-            time: 1
-          },
-          {
-            type: "typing",
-            time: 2
-          },
-          {
-            type: "message",
-            icon: "default",
-            text: "見えてるかな？？",
-            isRight: false
-          },
-          {
-            type: "waiting",
-            time: 1.5
-          },
-          {
-            type: "action",
-            name: "おるやんけ！！",
-            nextChatId: 2
-          },
-          {
-            type: "action",
-            name: "見えてます！！",
-            nextChatId: 3
-          }
-        ]
-      };
-      break;
-    case 2:
-      fns = {
-        chat: [
-          {
-            type: "resetActions"
-          },
-          {
-            type: "message",
-            icon: "default",
-            text: "おるやんけ！！",
-            isRight: true
-          },
-          {
-            type: "waiting",
-            time: 3
-          },
-          {
-            type: "typing",
-            time: 3
-          },
-          {
-            type: "waiting",
-            time: 0.2
-          },
-          {
-            type: "message",
-            icon: "default",
-            text: "は〜い、おりますよ〜w",
-            isRight: false
-          },
-        ]
-      };
-      break;
-  }
-
-  return parseEvents(fns.chat);
 }
 
 function parseEvents(events) {
@@ -117,19 +22,19 @@ function parseEvents(events) {
 
   events.forEach((event) => {
     switch (event.type) {
-      case "waiting":
+      case "WAITING":
         fns.push(waiting(event.time));
         break;
-      case "typing":
+      case "TYPING":
         fns.push(typing(event.time));
         break;
-      case "message":
-        fns.push(addMessage(event.icon, event.text, event.isRight));
+      case "TALK":
+        fns.push(addMessage(event.icon, event.text, event.right));
         break;
-      case "action":
-        fns.push(addAction(event.name, event.nextChatId));
+      case "PROVIDE_BUTTON":
+        fns.push(addAction(event.text, event.nextEventsId));
         break;
-      case "resetActions":
+      case "RESET_BUTTONS":
         fns.push(resetActions());
         break;
     }
@@ -166,8 +71,7 @@ function addAction(name, id) {
     app.actions.push({
       name: name,
       sendMessage: function () {
-        let fns = getFns(id);
-        chain(fns.shift(), fns, this);
+        retrieveEvents(id, app);
       }.bind(app)
     });
     next();
@@ -189,4 +93,4 @@ function waiting(sec) {
   }
 }
 
-export { chain, getFns }
+export { retrieveEvents }
