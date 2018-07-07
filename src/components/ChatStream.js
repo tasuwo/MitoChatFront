@@ -124,7 +124,7 @@ function parseEvents(events) {
         fns.push(typing(event.time));
         break;
       case "message":
-        fns.push(addMesssage(event.icon, event.text, event.isRight));
+        fns.push(addMessage(event.icon, event.text, event.isRight));
         break;
       case "action":
         fns.push(addAction(event.name, event.nextChatId));
@@ -150,7 +150,7 @@ function typing(sec) {
   }
 }
 
-function addMesssage(icon, text, isRight=true) {
+function addMessage(icon, text, isRight=true) {
   return (next, app) => {
     app.messages.push({
       icon: icon,
