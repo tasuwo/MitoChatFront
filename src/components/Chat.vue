@@ -7,8 +7,7 @@
                      v-bind:class="{ 'right': message.isRight }">
                     <div class="pure-u-3-5 message">
                         <div class="message-icon">
-                            <!-- TODO: message.icon に URL が格納されてくるはずなので、それを描画する -->
-                            <img v-bind:src="require('../assets/default.png')"/>
+                            <img v-bind:src="'images/' + message.icon"/>
                         </div>
                         <div class="message-body">
                             {{ message.text }}
