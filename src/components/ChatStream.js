@@ -7,7 +7,10 @@ function retrieveEvents(id, app) {
       chain(fns.shift(), fns, app);
     })
     .catch(e => {
-      this.errors.push(e)
+      if (!('errors' in app)) {
+        app.errors = [];
+      }
+      app.errors.push(e);
     })
 }
 
