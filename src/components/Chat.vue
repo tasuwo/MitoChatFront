@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { retrieveEvents } from './ChatStream'
+  import { retrieveChat } from './ChatStream'
 
   export default {
     name: 'Chat',
@@ -47,7 +47,7 @@
       }
     },
     mounted: function () {
-      retrieveEvents(1, this);
+      retrieveChat(1, this);
     }
   }
 </script>

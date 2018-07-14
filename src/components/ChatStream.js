@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-function retrieveEvents(id, app) {
-  return axios.get(`https://api.mito-chat.tasuwo.net/events/` + id)
+function retrieveChat(id, app) {
+  return axios.get(`https://api.mito-chat.tasuwo.net/chat/` + id)
     .then(response => {
-      let fns = parseEvents(response.data.events);
-      chain(fns.shift(), fns, app);
+      app.scenario = response.data.scenario;
+
+      let fns = parseScenario(app.scenario, 0);
+      playScenario(fns.shift(), fns, app);
     })
     .catch(e => {
       if (!('errors' in app)) {
@@ -14,16 +16,42 @@ function retrieveEvents(id, app) {
     })
 }
 
-function chain(fn, fns, app) {
+function playScenario(fn, fns, app) {
   if(fn) {
-    fn(() => chain(fns.shift(), fns, app), app);
+    fn(() => playScenario(fns.shift(), fns, app), app);
   }
 }
 
-function parseEvents(events) {
+/**
+ * scenario の仕様:
+ *
+ * {
+ *   <ID>: {
+ *     events: [
+ *       { type: <イベントタイプ>, ... },
+ *       { type: <イベントタイプ>, ... },
+ *       ...
+ *     ]
+ *   },
+ *   <ID>: {
+ *     sequence_id: <再生のためのID>
+ *     events: [
+ *       { type: <イベントタイプ>, ... },
+ *       { type: <イベントタイプ>, ... },
+ *       ...
+ *     ]
+ *   },
+ *   ...
+ * }
+ *
+ * @param scenario
+ * @param id
+ * @returns {Array}
+ */
+function parseScenario(scenario, id) {
   let fns = [];
 
-  events.forEach((event) => {
+  scenario[id].events.forEach((event) => {
     switch (event.type) {
       case "WAITING":
         fns.push(waiting(event.time));
@@ -74,7 +102,8 @@ function addAction(name, id) {
     app.actions.push({
       name: name,
       sendMessage: function () {
-        return retrieveEvents(id, app);
+        let fns = parseScenario(app.scenario, id);
+        playScenario(fns.shift(), fns, app);
       }.bind(app)
     });
     next();
@@ -96,4 +125,4 @@ function waiting(sec) {
   }
 }
 
-export { retrieveEvents }
+export { retrieveChat }
