@@ -63,7 +63,7 @@ function parseScenario(scenario, id) {
         fns.push(addMessage(event.icon, event.text, event.right));
         break;
       case "PROVIDE_BUTTON":
-        fns.push(addAction(event.text, event.nextEventsId));
+        fns.push(addAction(event.text, event.nextChatId));
         break;
       case "RESET_BUTTONS":
         fns.push(resetActions());

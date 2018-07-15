@@ -137,8 +137,8 @@ describe('ChatStream.js', () => {
       .reply(200, { scenario: {
           0: {
             events: [
-              { type: "PROVIDE_BUTTON", text: "test1", nextEventsId: 1 },
-              { type: "PROVIDE_BUTTON", text: "test2", nextEventsId: 2 },
+              { type: "PROVIDE_BUTTON", text: "test1", nextChatId: 1 },
+              { type: "PROVIDE_BUTTON", text: "test2", nextChatId: 2 },
             ]
           },
           1: {
