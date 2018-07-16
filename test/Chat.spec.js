@@ -68,24 +68,6 @@ describe('List.vue', () => {
       .toContain("test2");
   });
 
-  it('data.isTyping が true ならば入力中アイコンを描画する', () => {
-    const wrapper = shallowMount(Chat, {
-      data: function () {
-        return {
-          isTyping: false
-        }
-      },
-    });
-
-    expect(wrapper.find("div#is-typing > img").element.style.display)
-      .toBe("none");
-
-    Object.assign(wrapper.vm.$data, { isTyping : true });
-
-    expect(wrapper.find("div#is-typing > img").element.style.display)
-      .not.toBe("none");
-  });
-
   it('アクションボタン押下時に sendMessage が実行される', () => {
     const fn = jest.fn();
 
