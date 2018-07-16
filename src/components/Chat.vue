@@ -8,7 +8,7 @@
                          v-bind:class="{ 'right': message.isRight }"
                          :key="index">
                         <div class="pure-u-3-5 message">
-                            <div class="message-icon">
+                            <div class="message-icon" v-if="!message.isRight">
                                 <img v-bind:src="'images/' + message.icon"/>
                             </div>
                             <div class="message-body">
@@ -107,16 +107,19 @@
     }
 
     .message-icon > img {
-        padding: 13px;
+        padding: 13px 0 13px 13px;
         width: 50px;
         height: 50px;
+
+        border-radius: 20px;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
     }
 
     .message-body {
-        padding-top: 13px;
+        padding: 13px 16px 13px 16px;
         min-height: 50px;
 
-        margin-right: 13px;
         width: 100%;
     }
 
