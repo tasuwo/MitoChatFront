@@ -19,8 +19,9 @@ describe('List.vue', () => {
       .toHaveLength(messages.length);
     expect(wrapper.findAll("div.message"))
       .toHaveLength(messages.length);
+    // アイコンは自分のメッセージには表示しない
     expect(wrapper.findAll("div.message-icon"))
-      .toHaveLength(messages.length);
+      .toHaveLength(messages.length - 1);
     expect(wrapper.findAll("div.message-body"))
       .toHaveLength(messages.length);
 
@@ -35,8 +36,6 @@ describe('List.vue', () => {
       .toContain("test2");
 
     expect(wrapper.findAll("div.message-icon > img").at(0).attributes())
-      .toHaveProperty("src", "images/icon1");
-    expect(wrapper.findAll("div.message-icon > img").at(1).attributes())
       .toHaveProperty("src", "images/icon2");
   });
 
