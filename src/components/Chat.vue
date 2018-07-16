@@ -2,23 +2,24 @@
     <div id="chat">
         <div class="pure-g center">
             <div id="chat-wrapper" class="pure-u-5-6">
-                <div class="message-wrapper"
-                     v-for="message in messages"
-                     v-bind:class="{ 'right': message.isRight }">
-                    <div class="pure-u-3-5 message">
-                        <div class="message-icon">
-                            <img v-bind:src="'images/' + message.icon"/>
-                        </div>
-                        <div class="message-body">
-                            {{ message.text }}
+                <transition-group name="fade" mode="out-in">
+                    <div class="message-wrapper"
+                         v-for="(message, index) in messages"
+                         v-bind:class="{ 'right': message.isRight }"
+                         :key="index">
+                        <div class="pure-u-3-5 message">
+                            <div class="message-icon">
+                                <img v-bind:src="'images/' + message.icon"/>
+                            </div>
+                            <div class="message-body">
+                                {{ message.text }}
+                            </div>
                         </div>
                     </div>
+                </transition-group>
+                <div class="pure-u-3-5">
+                    <typing :isTyping="isTyping"></typing>
                 </div>
-            </div>
-        </div>
-        <div class="pure-g center">
-            <div id="is-typing">
-                <img v-show="isTyping" v-bind:src="require('../assets/waiting.gif')"/>
             </div>
         </div>
         <div class="pure-g center">
@@ -36,6 +37,7 @@
 
 <script>
   import { retrieveChat } from './ChatStream'
+  import Typing from './Typing'
 
   export default {
     name: 'Chat',
@@ -46,6 +48,7 @@
         isTyping: false
       }
     },
+    components: { Typing },
     mounted: function () {
       retrieveChat(1, this);
     }
@@ -67,13 +70,11 @@
     }
 
     .message {
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e7e7e7;
-        background-color: #f3f3f3;
+        background-color: rgb(243,243,243);
 
-        border-radius: 5px;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
+        border-radius: 15px;
+        -webkit-border-radius: 15px;
+        -moz-border-radius: 15px;
 
         margin-bottom: 20px;
     }
@@ -106,16 +107,16 @@
     }
 
     .message-icon > img {
-        padding: 10px;
+        padding: 13px;
         width: 50px;
         height: 50px;
     }
 
     .message-body {
-        padding-top: 10px;
+        padding-top: 13px;
         min-height: 50px;
 
-        margin-right: 70px;
+        margin-right: 13px;
         width: 100%;
     }
 
@@ -138,22 +139,33 @@
         margin-bottom: 10px;
     }
 
-
     /* --- */
 
-    #is-typing {
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e7e7e7;
-        background-color: white;
-
-        border-radius: 5px;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
+    .fade-enter {
+        opacity:0;
     }
 
-    #is-typing > img {
-        padding: 10px;
-        width: 30px;
-        height: 30px;
+    .fade-enter-active {
+        animation: bounce-in 0.3s;
+    }
+
+    .fade-leave {
+        opacity:1;
+    }
+
+    .fade-leave-active {
+        animation: bounce-in 0.3s reverse;
+    }
+
+    @keyframes bounce-in {
+        0% {
+            transform: scale(0.6);
+        }
+        50% {
+            transform: scale(1.02);
+        }
+        100% {
+            transform: scale(1);
+        }
     }
 </style>
