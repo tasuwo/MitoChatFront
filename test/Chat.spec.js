@@ -49,15 +49,11 @@ describe('List.vue', () => {
       },
     });
 
-    expect(wrapper.findAll("div.user-area-wrapper"))
-      .toHaveLength(0);
     expect(wrapper.findAll("button.action-button"))
       .toHaveLength(0);
 
     Object.assign(wrapper.vm.$data, { actions : actions });
 
-    expect(wrapper.findAll("div.user-area-wrapper"))
-      .toHaveLength(actions.length);
     expect(wrapper.findAll("button.action-button"))
       .toHaveLength(actions.length);
 
