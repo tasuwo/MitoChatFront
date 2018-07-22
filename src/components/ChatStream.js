@@ -1,24 +1,19 @@
 import axios from 'axios';
 
-function retrieveChat(id, app) {
+function retrieveChat(id, state) {
   return axios.get(`https://api.mito-chat.tasuwo.net/chat/` + id)
     .then(response => {
-      app.scenario = response.data.scenario;
-
-      let fns = parseScenario(app.scenario, 0);
-      playScenario(fns.shift(), fns, app);
+      let fns = parseScenario(response.data.scenario, 0);
+      playScenario(fns.shift(), fns, state);
     })
     .catch(e => {
-      if (!('errors' in app)) {
-        app.errors = [];
-      }
-      app.errors.push(e);
+      state.commit('addError', e);
     })
 }
 
-function playScenario(fn, fns, app) {
+function playScenario(fn, fns, state) {
   if(fn) {
-    fn(() => playScenario(fns.shift(), fns, app), app);
+    fn(() => playScenario(fns.shift(), fns, state), state);
   }
 }
 
@@ -63,7 +58,7 @@ function parseScenario(scenario, id) {
         fns.push(addMessage(event.icon, event.text, event.right));
         break;
       case "PROVIDE_BUTTON":
-        fns.push(addAction(event.text, event.nextChatId));
+        fns.push(addAction(event.text, event.nextChatId, scenario));
         break;
       case "RESET_BUTTONS":
         fns.push(resetActions());
@@ -77,18 +72,18 @@ function parseScenario(scenario, id) {
 // --------
 
 function typing(sec) {
-  return (next, app) => {
-    app.isTyping = true;
+  return (next, state) => {
+    state.commit('startTyping');
     setTimeout(function () {
-      app.isTyping = false;
+      state.commit('endTyping');
       next();
-    }.bind(app), sec * 1000);
+    }.bind(state), sec * 1000);
   }
 }
 
 function addMessage(icon, text, isRight=true) {
-  return (next, app) => {
-    app.messages.push({
+  return (next, state) => {
+    state.commit('addMessage', {
       icon: icon,
       text: text,
       isRight: isRight
@@ -97,22 +92,22 @@ function addMessage(icon, text, isRight=true) {
   };
 }
 
-function addAction(name, id) {
-  return (next, app) => {
-    app.actions.push({
+function addAction(name, id, scenario) {
+  return (next, state) => {
+    state.commit('addReactionButton', {
       name: name,
       sendMessage: function () {
-        let fns = parseScenario(app.scenario, id);
-        playScenario(fns.shift(), fns, app);
-      }.bind(app)
+        let fns = parseScenario(scenario, id);
+        playScenario(fns.shift(), fns, state);
+      }.bind(state)
     });
     next();
   }
 }
 
 function resetActions() {
-  return (next, app) => {
-    app.actions = [];
+  return (next, state) => {
+    state.commit('resetReactionButtons');
     next();
   }
 }
