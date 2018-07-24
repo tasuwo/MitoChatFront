@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { retrieveChat } from '@/components/ChatStream.js'
+import { retrieveChat } from '@/modules/ChatStream.js'
 
-import { createLocalVue, shallowMount } from '@vue/test-utils'
+import { createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 
 const localVue = createLocalVue();

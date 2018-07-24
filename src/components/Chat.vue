@@ -24,7 +24,7 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { retrieveChat } from './ChatStream';
+  import { retrieveChat } from '../modules/ChatStream';
   import Typing from './Typing';
 
   export default {
