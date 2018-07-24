@@ -6,10 +6,9 @@
                  v-bind:class="{ 'right': message.isRight }"
                  :key="index">
 
-                <div class="Message_Box pure-u-3-5">
-                    <div class="Message_Icon" v-if="!message.isRight">
-                        <img v-bind:src="'images/' + message.icon"/>
-                    </div>
+                <img class="Message_Icon" v-if="!message.isRight" v-bind:src="'images/' + message.icon"/>
+
+                <div class="Message_Box">
                     <div class="Message_Body">{{ message.text }}</div>
                 </div>
 
@@ -45,6 +44,7 @@
     .Message {
         &_Wrapper {
             display: flex;
+            margin-bottom: 20px;
         }
         &_Box {
             display: -webkit-flex;
@@ -59,28 +59,36 @@
             -webkit-border-radius: 15px;
             -moz-border-radius: 15px;
 
-            margin-bottom: 20px;
-        }
-        &_Icon {
-            width: 70px;
-            min-height: 70px;
+            margin-top: 5px;
 
-            img {
-                padding: 13px 0 13px 13px;
-                width: 50px;
-                height: 50px;
+            height: auto;
 
-                border-radius: 20px;
-                -webkit-border-radius: 20px;
-                -moz-border-radius: 20px;
+            @media (min-width: 42em) {
+                width: 60%;
             }
         }
+        &_Icon {
+            width: 60px;
+            height: 60px;
+
+            padding: 0 13px 0 0;
+
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+        }
         &_Body {
-            padding: 13px 16px 13px 16px;
-            min-height: 50px;
-            font-size: 1em;
+            font-size: 0.8em;
 
             width: 100%;
+
+            padding: 8px 12px 8px 12px;
+
+            @media (min-width: 42em) {
+                font-size: 1em;
+                min-height: 50px;
+                padding: 13px 13px 13px 13px;
+            }
         }
     }
 

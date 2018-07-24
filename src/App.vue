@@ -31,20 +31,15 @@
     }
     .MainContainer {
         width: 100%;
-        padding-top: calc(3em + 4em);
+        padding-top: calc(3em + 2.5em);
         padding-left: 1em;
         padding-right: 1em;
 
         @media (min-width: 42em) {
+            min-width: 500px;
+            padding-top: 3em;
             padding-left: 4em;
             padding-right: 4em;
-            padding-top: 3em;
-        }
-
-        @media (min-width: 68em) {
-            padding-left: 6em;
-            padding-right: 6em;
-            padding-top: 3em;
         }
     }
 </style>
