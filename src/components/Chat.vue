@@ -71,11 +71,9 @@
             width: 60px;
             height: 60px;
 
-            padding: 0 13px 0 0;
+            margin: 0 13px 0 0;
 
             border-radius: 50%;
-            -webkit-border-radius: 50%;
-            -moz-border-radius: 50%;
         }
         &_Body {
             font-size: 0.8em;
