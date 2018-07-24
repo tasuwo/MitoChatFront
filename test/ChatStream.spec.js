@@ -1,20 +1,54 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { retrieveChat } from '@/components/ChatStream.js'
+import { retrieveChat } from '@/modules/ChatStream.js'
+
+import { createLocalVue } from '@vue/test-utils'
+import Vuex from 'vuex'
+
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 const mockAxios = new MockAdapter(axios);
 jest.useFakeTimers();
 
 describe('ChatStream.js', () => {
   const baseUrl = "https://api.mito-chat.tasuwo.net";
-  let app = {};
+  let store;
+  let state;
 
   beforeEach(() => {
-    app = {
+    state = {
       messages: [],
       actions: [],
+      errors: [],
       isTyping: false
     };
+    store = new Vuex.Store({
+      state: state,
+      mutations: {
+        startTyping (state) {
+          state.isTyping = true
+        },
+        endTyping (state) {
+          state.isTyping = false
+        },
+
+        addReactionButton (state, reaction) {
+          state.actions.push(reaction)
+        },
+        resetReactionButtons (state) {
+          state.actions = []
+        },
+
+        addMessage (state, message) {
+          state.messages.push(message)
+        },
+
+        addError (state, error) {
+          state.errors.push(error)
+        }
+      }
+    })
   });
 
   it('複数のイベントの発行時には、それらを同期的に順に実行する', async () => {
@@ -24,63 +58,53 @@ describe('ChatStream.js', () => {
           {type: "TYPING", time: 3},
           {type: "WAITING", time: 3},
           {type: "TALK", icon: "icon1", text: "test1", right: true},
-          {type: "WAITING", time: 1},
         ]
       }
     };
     mockAxios.onGet(baseUrl + '/chat/1')
       .reply(200, { scenario: scenario });
 
-    expect(app)
-      .toEqual({
-        messages: [],
-        actions: [],
-        isTyping: false,
-    });
+    expect(state.messages)
+      .toHaveLength(0);
+    expect(state.isTyping)
+      .toBe(false);
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app.isTyping)
+    expect(state.messages)
+      .toHaveLength(0);
+    expect(state.isTyping)
       .toBe(true);
 
     jest.advanceTimersByTime(3 * 1000);
 
-    expect(app)
-      .toEqual({
-        messages: [],
-        actions: [],
-        isTyping: false,
-        scenario: scenario
-      });
+    expect(state.messages)
+      .toHaveLength(0);
+    expect(state.isTyping)
+      .toBe(false);
 
     jest.advanceTimersByTime(3 * 1000);
 
-    expect(app.messages)
+    expect(state.messages)
       .toEqual([
         { icon: "icon1", text: "test1", isRight: true },
-      ])
+      ]);
+    expect(state.isTyping)
+      .toBe(false);
   });
 
   it('待ちイベント発行時には、指定秒数停止する', async () => {
     const scenario = {
-          0: {
-            events: [
-              { type: "WAITING", time: 3 },
-            ]
-          }
-        };
+      0: {
+        events: [
+          { type: "WAITING", time: 3 },
+        ]
+      }
+    };
     mockAxios.onGet(baseUrl + '/chat/1')
       .reply(200, { scenario: scenario });
 
-    await retrieveChat(1, app);
-
-    expect(app)
-      .toEqual({
-        messages: [],
-        actions: [],
-        isTyping: false,
-        scenario: scenario
-      });
+    await retrieveChat(1, store);
 
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3 * 1000);
   });
@@ -95,17 +119,17 @@ describe('ChatStream.js', () => {
           }
         }});
 
-    expect(app.isTyping)
+    expect(state.isTyping)
       .toBe(false);
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app.isTyping)
+    expect(state.isTyping)
       .toBe(true);
 
     jest.advanceTimersByTime(3 * 1000);
 
-    expect(app.isTyping)
+    expect(state.isTyping)
       .toBe(false);
   });
 
@@ -120,12 +144,12 @@ describe('ChatStream.js', () => {
           }
         }});
 
-    expect(app.messages)
+    expect(state.messages)
       .toEqual([]);
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app.messages)
+    expect(state.messages)
       .toEqual([
           { icon: "icon1", text: "test1", isRight: true },
           { icon: "icon2", text: "test2", isRight: false },
@@ -153,25 +177,25 @@ describe('ChatStream.js', () => {
           }
         }});
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app.actions[0].name)
+    expect(state.actions[0].name)
       .toEqual("test1");
-    expect(app.actions[1].name)
+    expect(state.actions[1].name)
       .toEqual("test2");
-    expect(app.messages)
+    expect(state.messages)
       .toEqual([]);
 
-    await app.actions[0].sendMessage();
+    await state.actions[0].sendMessage();
 
-    expect(app.messages)
+    expect(state.messages)
       .toEqual([
         { icon: "icon1", text: "text1", isRight: true },
       ]);
 
-    await app.actions[1].sendMessage();
+    await state.actions[1].sendMessage();
 
-    expect(app.messages)
+    expect(state.messages)
       .toEqual([
         { icon: "icon1", text: "text1", isRight: true },
         { icon: "icon2", text: "text2", isRight: true },
@@ -180,37 +204,32 @@ describe('ChatStream.js', () => {
 
   it('ボタン消去イベント発行時には、格納済みの actions を全て削除する', async () => {
     const scenario = {
-          0: {
-            events: [
-              { type: "RESET_BUTTONS" },
-            ]
-          }
-        };
+      0: {
+        events: [
+          { type: "RESET_BUTTONS" },
+        ]
+      }
+    };
     mockAxios.onGet(baseUrl + '/chat/1')
       .reply(200, { scenario: scenario });
-    app.actions = [
+    state.actions = [
       { name: "test1", sendMessage: () => {} },
       { name: "test2", sendMessage: () => {} },
     ];
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app)
-      .toEqual({
-        messages: [],
-        actions: [],
-        isTyping: false,
-        scenario: scenario
-      });
+    expect(state.actions)
+      .toHaveLength(0);
   });
 
   it('タイムアウト時には app オブジェクトにエラーを格納する', async () => {
     mockAxios.onGet(baseUrl + '/chat/1')
       .timeout();
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app.errors)
+    expect(state.errors)
       .toHaveLength(1);
   });
 
@@ -218,9 +237,9 @@ describe('ChatStream.js', () => {
     mockAxios.onGet(baseUrl + '/chat/1')
       .reply(200, {});
 
-    await retrieveChat(1, app);
+    await retrieveChat(1, store);
 
-    expect(app.errors)
+    expect(state.errors)
       .toHaveLength(1);
   });
 });
