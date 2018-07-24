@@ -1,18 +1,19 @@
 <template>
     <div>
         <transition-group name="fade" mode="out-in">
-            <MessageWrapper v-for="(message, index) in messages"
-                            v-bind:class="{ 'right': message.isRight }"
-                            :key="index">
+            <div class="Message_Wrapper"
+                 v-for="(message, index) in messages"
+                 v-bind:class="{ 'right': message.isRight }"
+                 :key="index">
 
-                <Message class="pure-u-3-5">
-                    <Icon v-if="!message.isRight">
+                <div class="Message_Box pure-u-3-5">
+                    <div class="Message_Icon" v-if="!message.isRight">
                         <img v-bind:src="'images/' + message.icon"/>
-                    </Icon>
-                    <Body>{{ message.text }}</Body>
-                </Message>
+                    </div>
+                    <div class="Message_Body">{{ message.text }}</div>
+                </div>
 
-            </MessageWrapper>
+            </div>
         </transition-group>
 
         <div class="pure-u-3-5">
@@ -23,61 +24,13 @@
 
 <script>
   import { mapState } from 'vuex'
-  import styled from 'vue-styled-components';
   import { retrieveChat } from './ChatStream';
   import Typing from './Typing';
-
-  const MessageWrapper = styled.div`
-    display: flex;
-  `;
-
-  const Message = styled.div`
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
-    display: flex;
-
-    background-color: rgb(243,243,243);
-
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-
-    margin-bottom: 20px;
-  `;
-
-  const Icon = styled.div`
-    width: 70px;
-    min-height: 70px;
-
-    img {
-      padding: 13px 0 13px 13px;
-      width: 50px;
-      height: 50px;
-
-      border-radius: 20px;
-      -webkit-border-radius: 20px;
-      -moz-border-radius: 20px;
-    }
-  `;
-
-  const Body = styled.div`
-    padding: 13px 16px 13px 16px;
-    min-height: 50px;
-    font-size: 1em;
-
-    width: 100%;
-  `;
 
   export default {
     name: 'Chat',
     components: {
       Typing,
-      MessageWrapper,
-      Message,
-      Icon,
-      Body,
     },
     computed: mapState([
       'messages'
@@ -88,7 +41,49 @@
   }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
+    .Message {
+        &_Wrapper {
+            display: flex;
+        }
+        &_Box {
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+
+            background-color: rgb(243,243,243);
+
+            border-radius: 15px;
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+
+            margin-bottom: 20px;
+        }
+        &_Icon {
+            width: 70px;
+            min-height: 70px;
+
+            img {
+                padding: 13px 0 13px 13px;
+                width: 50px;
+                height: 50px;
+
+                border-radius: 20px;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+            }
+        }
+        &_Body {
+            padding: 13px 16px 13px 16px;
+            min-height: 50px;
+            font-size: 1em;
+
+            width: 100%;
+        }
+    }
+
     div.right {
         justify-content: flex-end;
     }
