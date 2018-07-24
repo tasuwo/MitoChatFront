@@ -1,5 +1,9 @@
-import { shallowMount } from '@vue/test-utils'
 import Chat from '@/components/Chat.vue'
+import { createLocalVue, shallowMount } from '@vue/test-utils'
+import Vuex from 'vuex'
+
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('List.vue', () => {
   it('data.messages 内のメッセージを描画する', () => {
@@ -7,79 +11,38 @@ describe('List.vue', () => {
       { icon: "icon1", text: "test1", isRight: true},
       { icon: "icon2", text: "test2", isRight: false}
     ];
+    const store = new Vuex.Store({
+      state: {
+        messages: messages
+      }
+    });
     const wrapper = shallowMount(Chat, {
-      data: function () {
-        return {
-          messages: messages
-        }
-      },
+      localVue,
+      store
     });
 
-    expect(wrapper.findAll("div.message-wrapper"))
+    expect(wrapper.findAll(".Message_Wrapper"))
       .toHaveLength(messages.length);
-    expect(wrapper.findAll("div.message"))
+    expect(wrapper.findAll(".Message_Box"))
       .toHaveLength(messages.length);
     // アイコンは自分のメッセージには表示しない
-    expect(wrapper.findAll("div.message-icon"))
+    expect(wrapper.findAll(".Message_Icon"))
       .toHaveLength(messages.length - 1);
-    expect(wrapper.findAll("div.message-body"))
+    expect(wrapper.findAll(".Message_Body"))
       .toHaveLength(messages.length);
 
-    expect(wrapper.findAll("div.message-wrapper").at(0).classes())
+    expect(wrapper.findAll(".Message_Wrapper").at(0).classes())
       .toContain("right");
-    expect(wrapper.findAll("div.message-wrapper").at(1).classes())
+    expect(wrapper.findAll(".Message_Wrapper").at(1).classes())
       .not.toContain("right");
 
-    expect(wrapper.findAll("div.message-body").at(0).text())
+    expect(wrapper.findAll(".Message_Body").at(0).text())
       .toContain("test1");
-    expect(wrapper.findAll("div.message-body").at(1).text())
+    expect(wrapper.findAll(".Message_Body").at(1).text())
       .toContain("test2");
 
-    expect(wrapper.findAll("div.message-icon > img").at(0).attributes())
+    expect(wrapper.findAll(".Message_Icon > img").at(0).attributes())
       .toHaveProperty("src", "images/icon2");
   });
 
-  it('data.actions 内のアクションを描画する', () => {
-    const actions = [ { name: "test1" }, { name: "test2" } ];
-    const wrapper = shallowMount(Chat, {
-      data: function () {
-        return {
-          actions: []
-        }
-      },
-    });
-
-    expect(wrapper.findAll("button.action-button"))
-      .toHaveLength(0);
-
-    Object.assign(wrapper.vm.$data, { actions : actions });
-
-    expect(wrapper.findAll("button.action-button"))
-      .toHaveLength(actions.length);
-
-    expect(wrapper.findAll("button.action-button").at(0).text())
-      .toContain("test1");
-    expect(wrapper.findAll("button.action-button").at(1).text())
-      .toContain("test2");
-  });
-
-  it('アクションボタン押下時に sendMessage が実行される', () => {
-    const fn = jest.fn();
-
-    const wrapper = shallowMount(Chat, {
-      data: function () {
-        return {
-          actions: [ { name: "test1", sendMessage: function () { fn(); } } ]
-        }
-      },
-    });
-
-    expect(fn.mock.calls)
-      .toHaveLength(0);
-
-    wrapper.findAll("button.action-button").at(0).trigger('click');
-
-    expect(fn.mock.calls)
-      .toHaveLength(1);
-  });
 });
