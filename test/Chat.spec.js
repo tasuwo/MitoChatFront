@@ -41,7 +41,7 @@ describe('List.vue', () => {
     expect(wrapper.findAll(".Message_Body").at(1).text())
       .toContain("test2");
 
-    expect(wrapper.findAll(".Message_Icon > img").at(0).attributes())
+    expect(wrapper.findAll(".Message_Icon").at(0).attributes())
       .toHaveProperty("src", "images/icon2");
   });
 
