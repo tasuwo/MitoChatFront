@@ -37,12 +37,16 @@
 
 <script>
   import { mapState } from 'vuex'
+  import jump from 'jump.js';
 
   export default {
     name: "Typing",
     computed: mapState([
       'isTyping'
-    ])
+    ]),
+    updated: function() {
+      jump(".loader");
+    }
   }
 </script>
 

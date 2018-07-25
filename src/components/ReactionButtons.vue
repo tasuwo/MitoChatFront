@@ -10,12 +10,16 @@
 
 <script>
   import { mapState } from 'vuex'
+  import jump from 'jump.js';
 
   export default {
     name: 'ReactionButtons',
     computed: mapState([
       'actions',
     ]),
+    updated: function() {
+      jump(".ReactionButtons_Wrapper:last-child");
+    }
   }
 </script>
 
