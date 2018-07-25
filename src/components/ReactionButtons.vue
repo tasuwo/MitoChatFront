@@ -1,9 +1,9 @@
 <template>
     <div class="ReactionButtons_List">
         <div class="ReactionButtons_Wrapper" v-for="action in actions">
-            <div class="ReactionButtons_Button" v-on:click="action.sendMessage(action.name)">
+            <button class="ReactionButtons_Button" v-on:click="action.sendMessage(action.name)">
                 {{ action.name }}
-            </div>
+            </button>
         </div>
     </div>
 </template>
