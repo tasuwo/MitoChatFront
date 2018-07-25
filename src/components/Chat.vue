@@ -25,6 +25,7 @@
   import { mapState } from 'vuex'
   import { retrieveChat } from '../modules/ChatStream';
   import Typing from './Typing';
+  import jump from 'jump.js';
 
   export default {
     name: 'Chat',
@@ -36,6 +37,9 @@
     ]),
     mounted: function () {
       retrieveChat(1, this.$store);
+    },
+    updated: function() {
+      jump(".Message_Wrapper:last-child");
     }
   }
 </script>
